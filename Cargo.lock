@@ -203,20 +203,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "css_block"
-version = "0.1.0"
-dependencies = [
- "clap",
- "clap-verbosity-flag",
- "colored",
- "env_logger",
- "inquire",
- "log",
- "regex",
- "scraper",
-]
-
-[[package]]
 name = "cssparser"
 version = "0.31.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -485,6 +471,20 @@ dependencies = [
  "log",
  "wasi",
  "windows-sys",
+]
+
+[[package]]
+name = "mkcss"
+version = "0.1.5"
+dependencies = [
+ "clap",
+ "clap-verbosity-flag",
+ "colored",
+ "env_logger",
+ "inquire",
+ "log",
+ "regex",
+ "scraper",
 ]
 
 [[package]]

@@ -1,0 +1,15 @@
+[project]
+name = "mkcss"
+version = "0.1.5"
+
+[tasks.build]
+info = "Build binaries"
+script = [
+   "maid clean -q",
+   "cargo build --release", 
+   "mv target/release/mkcss bin/mkcss",
+]
+
+[tasks]
+clean = { info = "Clean binary files", script = ["rimraf bin", "mkdir bin"] }
+install = { info = "Move binary file", script = ["sudo cp bin/mkcss /usr/local/bin", "echo Copied binary!"], depends = ["build"] }
