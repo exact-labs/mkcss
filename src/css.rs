@@ -87,9 +87,18 @@ pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
 pub fn minify(css: &str) -> String {
     let mut output = String::new();
     let mut iter = css.chars().peekable();
+    let mut in_rule = false;
 
     while let Some(c) = iter.next() {
         match c {
+            ':' => {
+                in_rule = true;
+                output.push(c);
+            }
+            ';' => {
+                in_rule = false;
+                output.push(c);
+            }
             '/' if iter.peek() == Some(&'*') => {
                 while let Some(c) = iter.next() {
                     if c == '*' {
@@ -101,7 +110,12 @@ pub fn minify(css: &str) -> String {
                 }
             }
 
-            space if space.is_whitespace() => (),
+            space if space.is_whitespace() => {
+                if in_rule {
+                    output.push(' ');
+                }
+            }
+
             _ => output.push(c),
         }
     }
