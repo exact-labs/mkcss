@@ -117,9 +117,10 @@ pub fn write(path: &str) -> Result<(), Box<dyn Error>> {
 
             let dir_path = base_path.parent().expect("Failed to get directory path");
             fs::create_dir_all(dir_path)?;
-            let mut file = File::create(href)?;
 
+            let mut file = File::create(base_path)?;
             write!(file, "{}", minify(&css_content))?;
+
             Ok(println!("Stylesheet has been created successfully."))
         }
         None => Ok(println!("No 'util' attribute found. Program will exit.")),
