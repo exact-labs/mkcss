@@ -20,15 +20,21 @@ pub fn get_classes(document: &Html) -> HashSet<String> {
 pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
     let mut css_content = String::from(ternary!(add_reset, include_str!("reset.css"), ""));
 
-    let styles: [(&str, &str); 8] = [
+    let styles: [(&str, &str); 14] = [
         ("text-xs", "font-size: 10px"),
         ("text-sm", "font-size: 15px"),
         ("text-md", "font-size: 20px"),
         ("text-lg", "font-size: 25px"),
         ("text-xl", "font-size: 30px"),
-        ("font-light", "font-weight: 300"),
-        ("font-bold", "font-weight: 800"),
-        ("font-extrabold", "font-weight: 900"),
+        ("font-thin", "font-weight: 100"),
+        ("font-extralight", "font-weight: 200"),
+        ("font-normal", "font-weight: 300"),
+        ("font-medium", "font-weight: 400"),
+        ("font-semibold", "font-weight: 500"),
+        ("font-bold", "font-weight: 600"),
+        ("font-extrabold", "font-weight: 700"),
+        ("font-light", "font-weight: 800"),
+        ("font-black", "font-weight: 900"),
     ];
 
     let margin_styles: [(&str, &str); 7] = [
