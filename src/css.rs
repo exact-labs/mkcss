@@ -22,18 +22,18 @@ pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
 
     let styles: [(&str, &str); 14] = [
         ("text-xs", "font-size: 10px"),
-        ("text-sm", "font-size: 15px"),
-        ("text-md", "font-size: 20px"),
-        ("text-lg", "font-size: 25px"),
-        ("text-xl", "font-size: 30px"),
+        ("text-sm", "font-size: 12px"),
+        ("text-md", "font-size: 14px"),
+        ("text-lg", "font-size: 18px"),
+        ("text-xl", "font-size: 24px"),
         ("font-thin", "font-weight: 100"),
         ("font-extralight", "font-weight: 200"),
-        ("font-normal", "font-weight: 300"),
-        ("font-medium", "font-weight: 400"),
-        ("font-semibold", "font-weight: 500"),
-        ("font-bold", "font-weight: 600"),
-        ("font-extrabold", "font-weight: 700"),
-        ("font-light", "font-weight: 800"),
+        ("font-light", "font-weight: 300"),
+        ("font-normal", "font-weight: 400"),
+        ("font-medium", "font-weight: 500"),
+        ("font-semibold", "font-weight: 600"),
+        ("font-bold", "font-weight: 700"),
+        ("font-extrabold", "font-weight: 800"),
         ("font-black", "font-weight: 900"),
     ];
 
@@ -50,18 +50,34 @@ pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
     for class in &classes {
         let parts: Vec<&str> = class.split('-').collect();
         let name = if class.starts_with("-") && parts.len() > 1 { parts[1] } else { parts[0] };
-        let property_value = parts
-            .get(if class.starts_with("-") { 2 } else { 1 })
-            .map(|&s| if class.starts_with("-") { format!("-{}", s) } else { s.to_string() })
-            .unwrap_or_else(String::new);
 
-        if let Some(&(_, property)) = margin_styles.iter().find(|(prop_name, _)| prop_name == &name) {
-            let sign = if name.starts_with("-") { "-" } else { "" };
-            let declarations: Vec<String> = property.split_whitespace().map(|p| format!("{}: {}{}px", p, sign, property_value)).collect();
-            css_content.push_str(&format!(".{} {{ {} }}\n", class, declarations.join("; ")));
-        }
-        if let Some(&(_, value)) = styles.iter().find(|(key, _)| key == *&class) {
-            css_content.push_str(&format!(".{} {{ {} }}\n", class, value));
+        match name {
+            "text" => {
+                if let Ok(size) = parts.get(1).unwrap_or(&"").parse::<u32>() {
+                    css_content.push_str(&format!(".{} {{ font-size: {}px }}\n", class, size));
+                } else if let Some(&(_, value)) = styles.iter().find(|(key, _)| key == *&class) {
+                    css_content.push_str(&format!(".{} {{ {} }}\n", class, value));
+                }
+            }
+            "font" => {
+                if let Ok(weight) = parts.get(1).unwrap_or(&"").parse::<u32>() {
+                    css_content.push_str(&format!(".{} {{ font-weight: {} }}\n", class, weight));
+                } else if let Some(&(_, value)) = styles.iter().find(|(key, _)| key == *&class) {
+                    css_content.push_str(&format!(".{} {{ {} }}\n", class, value));
+                }
+            }
+            _ => {
+                let property_value = parts
+                    .get(if class.starts_with("-") { 2 } else { 1 })
+                    .map(|&s| if class.starts_with("-") { format!("-{}", s) } else { s.to_string() })
+                    .unwrap_or_else(String::new);
+
+                if let Some(&(_, property)) = margin_styles.iter().find(|(prop_name, _)| prop_name == &name) {
+                    let sign = if name.starts_with("-") { "-" } else { "" };
+                    let declarations: Vec<String> = property.split_whitespace().map(|p| format!("{}: {}{}px", p, sign, property_value)).collect();
+                    css_content.push_str(&format!(".{} {{ {} }}\n", class, declarations.join("; ")));
+                }
+            }
         }
     }
 
