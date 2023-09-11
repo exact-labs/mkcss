@@ -1,5 +1,6 @@
+use log;
 use scraper::{Html, Selector};
-use std::{collections::HashSet, error::Error, fs, fs::File, include_str, io::Write, path::Path};
+use std::{collections::HashSet, error::Error, fs, fs::File, include_str, io::Write, path::Path, path::PathBuf};
 
 pub fn get_classes(document: &Html) -> HashSet<String> {
     let mut classes = HashSet::new();
@@ -101,12 +102,20 @@ pub fn write(path: &str) -> Result<(), Box<dyn Error>> {
     let selector = Selector::parse(r#"link[util]"#).unwrap();
     let link = document.select(&selector).next();
 
+    let parent = match Path::new(path).parent() {
+        Some(parent_path) => parent_path,
+        None => Path::new(path),
+    };
+
     match link {
         Some(link) => {
             let href = link.value().attr("href").unwrap();
-            println!("{}", href);
+            let mut base_path = PathBuf::from(parent);
 
-            let dir_path = Path::new(href).parent().expect("Failed to get directory path");
+            base_path.push(&href);
+            log::info!("export: {}", base_path.display());
+
+            let dir_path = base_path.parent().expect("Failed to get directory path");
             fs::create_dir_all(dir_path)?;
             let mut file = File::create(href)?;
 

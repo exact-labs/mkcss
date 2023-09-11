@@ -10,6 +10,10 @@ script = [
    "mv target/release/mkcss bin/mkcss",
 ]
 
+[tasks.build.cache]
+path = "src"
+target = ["bin/mkcss"]
+
 [tasks]
 clean = { info = "Clean binary files", script = ["rimraf bin", "mkdir bin"] }
 install = { info = "Move binary file", script = ["sudo cp bin/mkcss /usr/local/bin", "echo Copied binary!"], depends = ["build"] }
