@@ -20,12 +20,18 @@ pub fn get_classes(document: &Html) -> HashSet<String> {
 pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
     let mut css_content = String::from(ternary!(add_reset, include_str!("reset.css"), ""));
 
-    let styles: [(&str, &str); 14] = [
+    let styles: [(&str, &str); 20] = [
         ("text-xs", "font-size: 10px"),
         ("text-sm", "font-size: 12px"),
         ("text-md", "font-size: 14px"),
         ("text-lg", "font-size: 18px"),
         ("text-xl", "font-size: 24px"),
+        ("text-left", "text-align: left"),
+        ("text-center", "text-align: center"),
+        ("text-right", "text-align: right"),
+        ("text-justify", "text-align: justify"),
+        ("text-start", "text-align: start"),
+        ("text-end", "text-align: end"),
         ("font-thin", "font-weight: 100"),
         ("font-extralight", "font-weight: 200"),
         ("font-light", "font-weight: 300"),
@@ -58,6 +64,9 @@ pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
                 } else if let Some(&(_, value)) = styles.iter().find(|(key, _)| key == *&class) {
                     css_content.push_str(&format!(".{} {{ {} }}\n", class, value));
                 }
+            }
+            "color" => {
+                css_content.push_str(&format!(".{} {{ color: {} !important }}\n", class, parts.get(1).unwrap_or(&"")));
             }
             "font" => {
                 if let Ok(weight) = parts.get(1).unwrap_or(&"").parse::<u32>() {
@@ -136,7 +145,7 @@ pub fn write(path: &str, add_reset: bool) -> Result<(), Box<dyn Error>> {
     sorted_classes.sort();
 
     let css_content = create_stylesheet(sorted_classes, add_reset);
-    let selector = Selector::parse(r#"link[util]"#).unwrap();
+    let selector = Selector::parse(r#"link[mkcss]"#).unwrap();
     let link = document.select(&selector).next();
 
     let parent = match Path::new(path).parent() {
