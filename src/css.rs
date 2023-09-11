@@ -1,4 +1,5 @@
 use log;
+use macros_rs::ternary;
 use scraper::{Html, Selector};
 use std::{collections::HashSet, error::Error, fs, fs::File, include_str, io::Write, path::Path, path::PathBuf};
 
@@ -16,8 +17,8 @@ pub fn get_classes(document: &Html) -> HashSet<String> {
     classes
 }
 
-pub fn create_stylesheet(classes: Vec<&String>) -> String {
-    let mut css_content = String::from(include_str!("reset.css"));
+pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
+    let mut css_content = String::from(ternary!(add_reset, include_str!("reset.css"), ""));
 
     let styles: [(&str, &str); 8] = [
         ("text-xs", "font-size: 10px"),
@@ -86,7 +87,7 @@ pub fn minify(css: &str) -> String {
     output
 }
 
-pub fn write(path: &str) -> Result<(), Box<dyn Error>> {
+pub fn write(path: &str, add_reset: bool) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(path)?;
     let document = Html::parse_document(&contents);
     let mut classes = HashSet::new();
@@ -98,7 +99,7 @@ pub fn write(path: &str) -> Result<(), Box<dyn Error>> {
     let mut sorted_classes: Vec<_> = classes.iter().collect();
     sorted_classes.sort();
 
-    let css_content = create_stylesheet(sorted_classes);
+    let css_content = create_stylesheet(sorted_classes, add_reset);
     let selector = Selector::parse(r#"link[util]"#).unwrap();
     let link = document.select(&selector).next();
 

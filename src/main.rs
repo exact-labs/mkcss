@@ -11,6 +11,9 @@ fn main() {
     struct Cli {
         /// File path
         path: Option<String>,
+        /// Add reset.css to file
+        #[arg(short, long)]
+        reset: bool,
         #[clap(flatten)]
         verbose: Verbosity,
     }
@@ -19,10 +22,10 @@ fn main() {
     env_logger::Builder::new().filter_level(cli.verbose.log_level_filter()).init();
 
     if let Some(path) = cli.path.as_deref() {
-        css::write(path).unwrap();
+        css::write(path, cli.reset).unwrap();
     } else {
         match Text::new("path").with_default("index.html").with_help_message("The path of your HTML file.").prompt() {
-            Ok(path) => css::write(&path).unwrap(),
+            Ok(path) => css::write(&path, cli.reset).unwrap(),
             Err(_) => println!("{}", "Aborting...".white()),
         }
     }
