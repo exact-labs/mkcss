@@ -20,7 +20,11 @@ pub fn get_classes(document: &Html) -> HashSet<String> {
 pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
     let mut css_content = String::from(ternary!(add_reset, include_str!("reset.css"), ""));
 
-    let styles: [(&str, &str); 20] = [
+    let sans = r#"font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji""#;
+    let serif = r#"font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;"#;
+    let mono = r#"font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;"#;
+
+    let styles: [(&str, &str); 23] = [
         ("text-xs", "font-size: 10px"),
         ("text-sm", "font-size: 12px"),
         ("text-md", "font-size: 14px"),
@@ -41,6 +45,9 @@ pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
         ("font-bold", "font-weight: 700"),
         ("font-extrabold", "font-weight: 800"),
         ("font-black", "font-weight: 900"),
+        ("font-sans", sans),
+        ("font-serif", serif),
+        ("font-mono", mono),
     ];
 
     let margin_styles: [(&str, &str); 7] = [
@@ -66,7 +73,7 @@ pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
                 }
             }
             "color" => {
-                css_content.push_str(&format!(".{} {{ color: {} !important }}\n", class, parts.get(1).unwrap_or(&"")));
+                css_content.push_str(&format!(".{} {{ color: #{} !important }}\n", class, parts.get(1).unwrap_or(&"")));
             }
             "font" => {
                 if let Ok(weight) = parts.get(1).unwrap_or(&"").parse::<u32>() {
