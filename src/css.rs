@@ -43,16 +43,19 @@ pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
             }
             "fg" => css_content.push_str(&format!(".{} {{ color: #{} !important }}\n", class, parts.get(1).unwrap_or(&""))),
             "bg" => css_content.push_str(&format!(".{} {{ background-color: #{} !important }}\n", class, parts.get(1).unwrap_or(&""))),
+            "bc" => css_content.push_str(&format!(".{} {{ border-color: #{} !important }}\n", class, parts.get(1).unwrap_or(&""))),
             _ => {
                 let property_value = parts
                     .get(if class.starts_with("-") { 2 } else { 1 })
                     .map(|&s| if class.starts_with("-") { format!("-{}", s) } else { s.to_string() })
                     .unwrap_or_else(String::new);
 
-                if let Some(&(_, property)) = util::MARGIN_STYLES.iter().find(|(prop_name, _)| prop_name == &name) {
+                if let Some(&(_, property)) = util::CONTROL_STYLES.iter().find(|(prop_name, _)| prop_name == &name) {
                     let sign = if name.starts_with("-") { "-" } else { "" };
                     let declarations: Vec<String> = property.split_whitespace().map(|p| format!("{}: {}{}px !important", p, sign, property_value)).collect();
                     css_content.push_str(&format!(".{} {{ {} }}\n", class, declarations.join("; ")));
+                } else if let Some(&(_, value)) = util::STYLES.iter().find(|(key, _)| key == *&class) {
+                    css_content.push_str(&format!(".{} {{ {} }}\n", class, value));
                 }
             }
         }

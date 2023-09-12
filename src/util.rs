@@ -212,11 +212,11 @@ pub const STYLES: [(&str, &str); 273] = [
     ("rounded-bl-2xl", "border-bottom-left-radius: 1rem"),
     ("rounded-bl-3xl", "border-bottom-left-radius: 1.5rem"),
     ("rounded-bl-full", "border-bottom-left-radius: 9999px"),
+    ("border", "border-style: solid; border-width: 1px"),
     ("border-0", "border-width: 0px"),
     ("border-2", "border-width: 2px"),
     ("border-4", "border-width: 4px"),
     ("border-8", "border-width: 8px"),
-    ("border", "border-width: 1px"),
     ("border-x-0", "border-left-width: 0px"),
     ("border-right-width:", "0px"),
     ("border-x-2", "border-left-width: 2px"),
@@ -278,7 +278,7 @@ pub const STYLES: [(&str, &str); 273] = [
     ("font-mono", MONO),
 ];
 
-pub const MARGIN_STYLES: [(&str, &str); 7] = [
+pub const CONTROL_STYLES: [(&str, &str); 14] = [
     ("m", "margin"),
     ("mt", "margin-top"),
     ("mr", "margin-right"),
@@ -286,4 +286,11 @@ pub const MARGIN_STYLES: [(&str, &str); 7] = [
     ("ml", "margin-left"),
     ("mx", "margin-left margin-right"),
     ("my", "margin-top margin-bottom"),
+    ("p", "padding"),
+    ("pt", "padding-top"),
+    ("pr", "padding-right"),
+    ("pb", "padding-bottom"),
+    ("pl", "padding-left"),
+    ("px", "padding-left padding-right"),
+    ("py", "padding-top padding-bottom"),
 ];
