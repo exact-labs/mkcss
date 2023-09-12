@@ -2,7 +2,7 @@ import = ["util/convert.toml"]
 
 [project]
 name = "mkcss"
-version = "0.1.6"
+version = "0.1.7"
 
 [tasks.build]
 info = "Build binaries"
