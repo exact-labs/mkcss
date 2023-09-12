@@ -1,0 +1,7 @@
+[tasks.convert]
+path = "util"
+script = [
+"rustc convert.rs",
+"./convert",
+"rm convert"
+]

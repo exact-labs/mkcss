@@ -1,3 +1,5 @@
+use crate::util;
+
 use log;
 use macros_rs::ternary;
 use scraper::{Html, Selector};
@@ -18,47 +20,7 @@ pub fn get_classes(document: &Html) -> HashSet<String> {
 }
 
 pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
-    let mut css_content = String::from(ternary!(add_reset, include_str!("reset.css"), ""));
-
-    let sans = r#"font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji""#;
-    let serif = r#"font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;"#;
-    let mono = r#"font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;"#;
-
-    let styles: [(&str, &str); 23] = [
-        ("text-xs", "font-size: 10px"),
-        ("text-sm", "font-size: 12px"),
-        ("text-md", "font-size: 14px"),
-        ("text-lg", "font-size: 18px"),
-        ("text-xl", "font-size: 24px"),
-        ("text-left", "text-align: left"),
-        ("text-center", "text-align: center"),
-        ("text-right", "text-align: right"),
-        ("text-justify", "text-align: justify"),
-        ("text-start", "text-align: start"),
-        ("text-end", "text-align: end"),
-        ("font-thin", "font-weight: 100"),
-        ("font-extralight", "font-weight: 200"),
-        ("font-light", "font-weight: 300"),
-        ("font-normal", "font-weight: 400"),
-        ("font-medium", "font-weight: 500"),
-        ("font-semibold", "font-weight: 600"),
-        ("font-bold", "font-weight: 700"),
-        ("font-extrabold", "font-weight: 800"),
-        ("font-black", "font-weight: 900"),
-        ("font-sans", sans),
-        ("font-serif", serif),
-        ("font-mono", mono),
-    ];
-
-    let margin_styles: [(&str, &str); 7] = [
-        ("m", "margin"),
-        ("mt", "margin-top"),
-        ("mr", "margin-right"),
-        ("mb", "margin-bottom"),
-        ("ml", "margin-left"),
-        ("mx", "margin-left margin-right"),
-        ("my", "margin-top margin-bottom"),
-    ];
+    let mut css_content = String::from(ternary!(add_reset, include_str!("static/reset.css"), ""));
 
     for class in &classes {
         let parts: Vec<&str> = class.split('-').collect();
@@ -67,30 +29,29 @@ pub fn create_stylesheet(classes: Vec<&String>, add_reset: bool) -> String {
         match name {
             "text" => {
                 if let Ok(size) = parts.get(1).unwrap_or(&"").parse::<u32>() {
-                    css_content.push_str(&format!(".{} {{ font-size: {}px }}\n", class, size));
-                } else if let Some(&(_, value)) = styles.iter().find(|(key, _)| key == *&class) {
+                    css_content.push_str(&format!(".{} {{ font-size: {}px !important }}\n", class, size));
+                } else if let Some(&(_, value)) = util::STYLES.iter().find(|(key, _)| key == *&class) {
                     css_content.push_str(&format!(".{} {{ {} }}\n", class, value));
                 }
-            }
-            "color" => {
-                css_content.push_str(&format!(".{} {{ color: #{} !important }}\n", class, parts.get(1).unwrap_or(&"")));
             }
             "font" => {
                 if let Ok(weight) = parts.get(1).unwrap_or(&"").parse::<u32>() {
-                    css_content.push_str(&format!(".{} {{ font-weight: {} }}\n", class, weight));
-                } else if let Some(&(_, value)) = styles.iter().find(|(key, _)| key == *&class) {
+                    css_content.push_str(&format!(".{} {{ font-weight: {} !important }}\n", class, weight));
+                } else if let Some(&(_, value)) = util::STYLES.iter().find(|(key, _)| key == *&class) {
                     css_content.push_str(&format!(".{} {{ {} }}\n", class, value));
                 }
             }
+            "fg" => css_content.push_str(&format!(".{} {{ color: #{} !important }}\n", class, parts.get(1).unwrap_or(&""))),
+            "bg" => css_content.push_str(&format!(".{} {{ background-color: #{} !important }}\n", class, parts.get(1).unwrap_or(&""))),
             _ => {
                 let property_value = parts
                     .get(if class.starts_with("-") { 2 } else { 1 })
                     .map(|&s| if class.starts_with("-") { format!("-{}", s) } else { s.to_string() })
                     .unwrap_or_else(String::new);
 
-                if let Some(&(_, property)) = margin_styles.iter().find(|(prop_name, _)| prop_name == &name) {
+                if let Some(&(_, property)) = util::MARGIN_STYLES.iter().find(|(prop_name, _)| prop_name == &name) {
                     let sign = if name.starts_with("-") { "-" } else { "" };
-                    let declarations: Vec<String> = property.split_whitespace().map(|p| format!("{}: {}{}px", p, sign, property_value)).collect();
+                    let declarations: Vec<String> = property.split_whitespace().map(|p| format!("{}: {}{}px !important", p, sign, property_value)).collect();
                     css_content.push_str(&format!(".{} {{ {} }}\n", class, declarations.join("; ")));
                 }
             }

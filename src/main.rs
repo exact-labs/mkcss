@@ -1,4 +1,5 @@
 mod css;
+mod util;
 
 use clap::Parser;
 use clap_verbosity_flag::Verbosity;
